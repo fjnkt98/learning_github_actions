@@ -1,0 +1,33 @@
+name: grant-tag
+run-name: grant-tag
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - main_crate/Cargo.toml
+      - sub_crate/Cargo.toml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - main_crate/Cargo.toml
+      - sub_crate/Cargo.toml
+
+jobs:
+  tag:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: salsify/action-detect-and-tag-new-version@v2
+        id: detect-main-crate-version
+        with:
+          create-tag: false
+          version-command: cargo read-manifest --manifest-path=main_crate/Cargo.toml | jq -r .version
+      - uses: mathieudutour/github-tag-action@v5.6
+        with:
+          custom_tag: main_crate${{steps.detect-main-crate-version.outputs.current-version}}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
