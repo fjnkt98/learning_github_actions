@@ -1,0 +1,13 @@
+name: publish-main-crate
+
+on:
+  push:
+    tags:
+      - "main_crate_v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd main_crate && echo "Running cargo publish in $(pwd)!"
